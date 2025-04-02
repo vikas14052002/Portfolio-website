@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Code, Briefcase, User, Mail, ChevronDown, ExternalLink, Github } from 'lucide-react';
 import HeroAnimation from './components/HeroAnimation';
+import emailjs from '@emailjs/browser';
+import { EMAILJS_CONFIG } from './config/emailjs';
 
 // Add animations CSS
 const floatAnimation = `
@@ -134,6 +136,16 @@ function App() {
   const [revealScore, setRevealScore] = useState(false);
   const [selectedEduIndex, setSelectedEduIndex] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
@@ -185,6 +197,50 @@ function App() {
   const handleClosePopup = () => {
     setShowPopup(false);
     setRevealScore(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      const templateParams = {
+        to_email: 'vikas14052002@gmail.com',
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message
+      };
+
+      await emailjs.send(
+        EMAILJS_CONFIG.SERVICE_ID,
+        EMAILJS_CONFIG.TEMPLATE_ID,
+        templateParams,
+        EMAILJS_CONFIG.PUBLIC_KEY
+      );
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Message sent successfully! I will get back to you soon.'
+      });
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Failed to send message. Please try again later.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -535,35 +591,70 @@ function App() {
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Get In Touch</h2>
           <div className="max-w-2xl mx-auto">
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-2">Name</label>
                 <input
                   type="text"
-                  className="w-full px-4 py-2 rounded-lg border bg-gray-700 border-gray-600"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 rounded-lg border bg-gray-700 border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
                   placeholder="Your name"
+                  required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full px-4 py-2 rounded-lg border bg-gray-700 border-gray-600"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 rounded-lg border bg-gray-700 border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
                   placeholder="your@email.com"
+                  required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Message</label>
                 <textarea
-                  className="w-full px-4 py-2 rounded-lg border bg-gray-700 border-gray-600 h-32"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 rounded-lg border bg-gray-700 border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors h-32 resize-none"
                   placeholder="Your message"
+                  required
                 />
               </div>
+              {submitStatus.type && (
+                <div className={`p-4 rounded-lg ${
+                  submitStatus.type === 'success' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+                }`}>
+                  {submitStatus.message}
+                </div>
+              )}
               <button
                 type="submit"
-                className="w-full px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={isSubmitting}
+                className={`w-full px-8 py-3 bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                  isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-700'
+                }`}
               >
-                Send Message
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    <Mail size={20} />
+                    <span>Send Message</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
