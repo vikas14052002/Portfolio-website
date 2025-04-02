@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Code, Briefcase, User, Mail, ChevronDown, ExternalLink, Github } from 'lucide-react';
+import HeroAnimation from './components/HeroAnimation';
 
 // Add animations CSS
 const floatAnimation = `
@@ -216,11 +217,12 @@ function App() {
 
       {/* Hero Section */}
       <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-950 to-purple-950 -z-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 opacity-90" />
+        <HeroAnimation />
         
-        <div className="container mx-auto px-6 py-24 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            Hi, I'm <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">{userData.name}</span>
+        <div className="container mx-auto px-6 py-24 text-center z-20">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            Hi, I'm <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">{userData.name}</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-12 animate-fade-in-delay">
             {userData.title}
@@ -228,13 +230,13 @@ function App() {
           <div className="flex flex-col md:flex-row gap-4 justify-center items-center animate-fade-in-delay-2">
             <a
               href="#projects"
-              className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center gap-2 hover:scale-105 transition-transform"
             >
               View My Work <ChevronDown size={20} />
             </a>
             <a
               href="#contact"
-              className="px-8 py-3 border-2 border-white rounded-full hover:bg-gray-800 transition-colors"
+              className="px-8 py-3 border-2 border-white rounded-full hover:bg-gray-800 transition-colors hover:scale-105 transition-transform"
             >
               Contact Me
             </a>
@@ -590,7 +592,7 @@ function App() {
                     This helps support the development of this portfolio.
                   </p>
                 </div>
-                <div className="border border-gray-600 rounded-lg p-4 mb-6">
+                {/* <div className="border border-gray-600 rounded-lg p-4 mb-6">
                   <p className="font-medium mb-2">Payment Amount: <span className="text-green-400">$2.00</span></p>
                   <div className="flex flex-col gap-2">
                     <input type="text" placeholder="Card Number" className="bg-gray-700 rounded p-2 border border-gray-600" />
@@ -599,14 +601,14 @@ function App() {
                       <input type="text" placeholder="CVC" className="bg-gray-700 rounded p-2 border border-gray-600" />
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex gap-3">
                   <button 
                     onClick={handleClosePopup}
                     className="flex-1 px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     Cancel
-                  </button>
+                  </button>`
                   <button 
                     onClick={handleConfirmPayment}
                     className="flex-1 px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
